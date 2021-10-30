@@ -21,8 +21,7 @@ function prepareData(result) {
 	});
 }
 
-// TODO: реализовать
-// показать значение метрики за несколько день
+// рассчитывает метрики за несколько день
 function addMetricByRange(data, page, name, dateFromString, dateToString) {
 	const sampleData = data.filter(item => {
 		const isCurrent = item.page == page && item.name == name;
@@ -49,7 +48,8 @@ function addMetricByRange(data, page, name, dateFromString, dateToString) {
 	return result;
 }
 
-function calcMetricByRange(data, page, dateFrom, dateTo) {
+// показывает метрики за выбранные дни
+function showMetricByPeriod(data, page, dateFrom, dateTo) {
 	console.log(`All metrics from ${dateFrom} to ${dateTo}:`);
 	let table = {};
 
@@ -61,8 +61,34 @@ function calcMetricByRange(data, page, dateFrom, dateTo) {
 	console.table(table);
 }
 
+// Рассчитать метрику сессии
+function addMetricBySession(data, page, name, session) {
+	let sampleData = data
+		.filter(item => item.requestId == session && item.name == name && item.page == page)
+		.map(item => item.value);
+
+	let result = {};
+
+	result.hits = sampleData.length;
+	result.p25 = quantile(sampleData, 0.25);
+	result.p50 = quantile(sampleData, 0.5);
+	result.p75 = quantile(sampleData, 0.75);
+	result.p95 = quantile(sampleData, 0.95);
+
+	return result;
+}
+
 // показать сессию пользователя
-function showSession() {
+function showSession(data, page, session) {
+	console.log(`All metrics for session ID #${session}:`);
+
+	let table = {};
+	table.connect = addMetricBySession(data, page, 'connect', session);
+	table.ttfb = addMetricBySession(data, page, 'ttfb', session);
+	table.loaded = addMetricBySession(data, page, 'loaded', session);
+	table.result = addMetricBySession(data, page, 'result', session);
+
+	console.table(table);
 }
 
 // сравнить метрику в разных срезах
@@ -72,7 +98,6 @@ function compareMetric() {
 // любые другие сценарии, которые считаете полезными
 
 
-// Пример
 // добавить метрику за выбранный день
 function addMetricByDate(data, page, name, date) {
 	let sampleData = data
@@ -114,7 +139,6 @@ fetch(`https://shri.yandex/hw/stat/data?counterId=${uuid}`)
 		console.log('data: ', data);
 
 		calcMetricsByDate(data, 'index.html', '2021-10-30');
-
-		calcMetricByRange(data, 'index.html', '2021-10-29', '2021-10-30');
-		// добавить свои сценарии, реализовать функции выше
+		showMetricByPeriod(data, 'index.html', '2021-10-29', '2021-10-30');
+		showSession(data, 'index.html', '180819833397');
 	});
