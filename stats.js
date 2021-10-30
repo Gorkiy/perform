@@ -144,7 +144,7 @@ fetch(`https://shri.yandex/hw/stat/data?counterId=${uuid}`)
 	.then(res => res.json())
 	.then(result => {
 		let data = prepareData(result);
-		// console.log('data: ', data);
+		console.log('data: ', data);
 		const dateFrom = '2021-10-29';
 		const dateTo = '2021-10-30';
 

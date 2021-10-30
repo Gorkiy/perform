@@ -4,13 +4,12 @@ let counter = new Counter();
 
 counter.init(uuid, String(Math.random()).substr(2, 12), 'index.html');
 const platform = navigator.userAgent && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
-    ? 'touch'
-    : 'desktop';
+? 'touch'
+: 'desktop';
 
 counter.setAdditionalParams({
     env: 'production',
-    platform,
-    // entry
+    platform
 });
 
 counter.send('connect', performance.timing.connectEnd - performance.timing.connectStart);
