@@ -1,3 +1,5 @@
+import { uuid } from './config.js';
+
 function quantile(arr, q) {
     const sorted = arr.sort((a, b) => a - b);
     const pos = (sorted.length - 1) * q;
@@ -68,7 +70,7 @@ function calcMetricsByDate(data, page, date) {
 	console.table(table);
 };
 
-fetch('https://shri.yandex/hw/stat/data?counterId=D8F28E50-3339-11EC-9EDF-9F93090795B1')
+fetch(`https://shri.yandex/hw/stat/data?counterId=${uuid}`)
 	.then(res => res.json())
 	.then(result => {
 		let data = prepareData(result);
