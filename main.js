@@ -7,17 +7,11 @@ const platform = navigator.userAgent && (/Android|webOS|iPhone|iPad|iPod|BlackBe
     ? 'touch'
     : 'desktop';
 
-const [entry] = performance.getEntriesByType('navigation');
-
-console.log('entry: ', entry);
-
 counter.setAdditionalParams({
     env: 'production',
     platform,
-    entry
+    // entry
 });
-
-console.log('browser.navigator.userAgent: ', navigator.userAgent);
 
 counter.send('connect', performance.timing.connectEnd - performance.timing.connectStart);
 counter.send('ttfb', performance.timing.responseEnd - performance.timing.requestStart);
@@ -37,3 +31,13 @@ setTimeout(function () {
     image.onload = () => counter.send('result', Date.now() - timeStart);
     container.append(image);
 }, Math.random() * 1000 + 500);
+
+document.querySelector('body').onload = () => {
+    const entries = performance.getEntriesByType('paint');
+    entries.forEach(entry => {
+        counter.send(entry.name, entry.startTime);
+    });
+
+    const [entry] = performance.getEntriesByType('navigation');
+    counter.send('domComplete', entry.domComplete);
+};

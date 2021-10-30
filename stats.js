@@ -1,6 +1,7 @@
 import { uuid } from './config.js';
 
 function quantile(arr, q) {
+	if (!arr) return 0;
 	const sorted = arr.sort((a, b) => a - b);
 	const pos = (sorted.length - 1) * q;
 	const base = Math.floor(pos);
@@ -57,7 +58,8 @@ function showMetricByPeriod(data, page, dateFrom, dateTo) {
 	table.ttfb = addMetricByRange(data, page, 'ttfb', dateFrom, dateTo);
 	table.loaded = addMetricByRange(data, page, 'loaded', dateFrom, dateTo);
 	table.result = addMetricByRange(data, page, 'result', dateFrom, dateTo);
-
+	table.paint = addMetricByDate(data, page, 'first-contentful-paint', dateFrom, dateTo);
+	table.domComplete = addMetricByDate(data, page, 'domComplete', dateFrom, dateTo);
 	console.table(table);
 }
 
@@ -69,7 +71,6 @@ function addMetricBySession(data, page, name, session) {
 
 	let result = {};
 
-	result.hits = sampleData.length;
 	result.p25 = quantile(sampleData, 0.25);
 	result.p50 = quantile(sampleData, 0.5);
 	result.p75 = quantile(sampleData, 0.75);
@@ -92,11 +93,17 @@ function showSession(data, page, session) {
 }
 
 // сравнить метрику в разных срезах
-function compareMetric() {
+function compareMetric(data, page, dateFrom, dateTo) {
+	const desktopData = data.filter(item => item.additional.platform === 'desktop');
+	const touchData = data.filter(item => item.additional.platform === 'touch'
+	);
+
+	console.log('* * * Desktop devices * * *');
+	showMetricByPeriod(desktopData, page, dateFrom, dateTo)
+
+	console.log('* * * Touch devices * * *');
+	showMetricByPeriod(touchData, page, dateFrom, dateTo)
 }
-
-// любые другие сценарии, которые считаете полезными
-
 
 // добавить метрику за выбранный день
 function addMetricByDate(data, page, name, date) {
@@ -123,7 +130,8 @@ function calcMetricsByDate(data, page, date) {
 	table.ttfb = addMetricByDate(data, page, 'ttfb', date);
 	table.loaded = addMetricByDate(data, page, 'loaded', date);
 	table.result = addMetricByDate(data, page, 'result', date);
-
+	table.paint = addMetricByDate(data, page, 'first-contentful-paint', date);
+	table.domComplete = addMetricByDate(data, page, 'domComplete', date);
 	console.table(table);
 };
 
@@ -136,9 +144,12 @@ fetch(`https://shri.yandex/hw/stat/data?counterId=${uuid}`)
 	.then(res => res.json())
 	.then(result => {
 		let data = prepareData(result);
-		console.log('data: ', data);
+		// console.log('data: ', data);
+		const dateFrom = '2021-10-29';
+		const dateTo = '2021-10-30';
 
-		calcMetricsByDate(data, 'index.html', '2021-10-30');
-		showMetricByPeriod(data, 'index.html', '2021-10-29', '2021-10-30');
+		calcMetricsByDate(data, 'index.html', dateTo);
+		showMetricByPeriod(data, 'index.html', dateFrom, dateTo);
 		showSession(data, 'index.html', '180819833397');
+		compareMetric(data, 'index.html', dateFrom, dateTo);
 	});
