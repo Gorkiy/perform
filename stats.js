@@ -58,8 +58,8 @@ function showMetricByPeriod(data, page, dateFrom, dateTo) {
 	table.ttfb = addMetricByRange(data, page, 'ttfb', dateFrom, dateTo);
 	table.loaded = addMetricByRange(data, page, 'loaded', dateFrom, dateTo);
 	table.result = addMetricByRange(data, page, 'result', dateFrom, dateTo);
-	table.paint = addMetricByDate(data, page, 'first-contentful-paint', dateFrom, dateTo);
-	table.domComplete = addMetricByDate(data, page, 'domComplete', dateFrom, dateTo);
+	table.paint = addMetricByRange(data, page, 'first-contentful-paint', dateFrom, dateTo);
+	table.domComplete = addMetricByRange(data, page, 'domComplete', dateFrom, dateTo);
 	console.table(table);
 }
 
@@ -150,6 +150,6 @@ fetch(`https://shri.yandex/hw/stat/data?counterId=${uuid}`)
 
 		calcMetricsByDate(data, 'index.html', dateTo);
 		showMetricByPeriod(data, 'index.html', dateFrom, dateTo);
-		showSession(data, 'index.html', '180819833397');
+		showSession(data, 'index.html', '984838954876');
 		compareMetric(data, 'index.html', dateFrom, dateTo);
 	});
