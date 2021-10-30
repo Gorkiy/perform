@@ -61,11 +61,8 @@ function calcMetricsByDate(data, page, date) {
 	let table = {};
 	table.connect = addMetricByDate(data, page, 'connect', date);
 	table.ttfb = addMetricByDate(data, page, 'ttfb', date);
-	table.load = addMetricByDate(data, page, 'load', date);
-	table.square = addMetricByDate(data, page, 'square', date);
-	table.load = addMetricByDate(data, page, 'load', date);
-	table.generate = addMetricByDate(data, page, 'generate', date);
-	table.draw = addMetricByDate(data, page, 'draw', date);
+	table.loaded = addMetricByDate(data, page, 'loaded', date);
+	table.result = addMetricByDate(data, page, 'result', date);
 
 	console.table(table);
 };
@@ -75,7 +72,7 @@ fetch(`https://shri.yandex/hw/stat/data?counterId=${uuid}`)
 	.then(result => {
 		let data = prepareData(result);
 
-		calcMetricsByDate(data, 'send test', '2021-10-22');
+		calcMetricsByDate(data, 'index.html', '2021-10-30');
 
 		// добавить свои сценарии, реализовать функции выше
 	});
